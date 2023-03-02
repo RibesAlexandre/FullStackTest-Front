@@ -89,15 +89,24 @@ export default {
     this.getCurrencies();
   },
   methods: {
+    /**
+     * Mise à jour de la date
+     */
     changeDate() {
         this.loaded = false;
         this.getExchangesRates();
     },
+    /**
+     * Date du jour
+     */
     getDate() {
       let date = this.selectedDate === '' ? new Date() : new Date(this.selectedDate);
       let today = date.getFullYear() + '-' + (date.getMonth() + 1 < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1) + '-' + (date.getDate() < 10 ? `0${date.getDate()}` : date.getDate());
       this.selectedDate = today;
     },
+    /**
+     * Rechargement
+     */
     reload() {
       this.resetError();
       this.selectedDate = '';
@@ -105,10 +114,13 @@ export default {
       this.currencies = [];
       this.getCurrencies();
     },
+    /**
+     * Récupération des conversions selon la date et la devise sélectionnée
+     */
     getExchangesRates() {
       this.resetError();
       let currencies = this.currencies.toString();
-      axios.get(`http://optidigital.test/api/rates/date/${this.selectedDate}/${this.currencyBase}`)
+      axios.get(`${config.apiEndpoint}rates/date/${this.selectedDate}/${this.currencyBase}`)
           .then(response => {
             this.rates = response.data.rates;
             console.log(this.rates);
@@ -120,10 +132,13 @@ export default {
             this.errorMessage = error.response.data.error;
           });
     },
+    /**
+     * Récupération des devises
+     */
     getCurrencies() {
       this.getDate();
       this.resetError();
-      axios.get(`http://optidigital.test/api/currencies`)
+      axios.get(`${config.apiEndpoint}currencies`)
           .then(response => {
             let apiCurrencies = response.data.data;
             apiCurrencies.forEach((rate) => {
@@ -138,10 +153,16 @@ export default {
             this.errorMessage = error.response.data.error;
           });
     },
+    /**
+     * Changement de la devise de base
+     */
     changeCurrencyBase() {
       this.resetError();
       this.getExchangesRates();
     },
+    /**
+     * Réinitialisation des erreurs
+     */
     resetError() {
       this.hasError = false;
       this.errorMessage = '';
